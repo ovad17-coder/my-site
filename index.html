@@ -256,7 +256,7 @@
       box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
     }
 
-    /* שדה מלכודת ספאם - מוסתר מגולשים אנושיים */
+    /* שדה מלכודת ספאם - מוסתר מגולשים */
     .hp-field {
       display: none !important;
       visibility: hidden !important;
@@ -290,8 +290,9 @@
     }
 
     .btn-submit:disabled {
-      opacity: 0.7;
+      opacity: 0.6;
       cursor: not-allowed;
+      background: #94a3b8;
     }
 
     .success-message {
@@ -304,6 +305,17 @@
       text-align: center;
       font-size: 15px;
       line-height: 1.5;
+    }
+
+    .blocked-message {
+      margin-top: 20px;
+      padding: 16px;
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 15px;
     }
 
     /* Footer */
@@ -384,7 +396,7 @@
         </div>
 
         <form id="contactForm" onsubmit="handleFormSubmit(event)" novalidate>
-          <!-- שדה מלכודת ספאם (Honeypot) - נסתר מגולשים -->
+          <!-- שדה מלכודת ספאם (Honeypot) -->
           <div class="hp-field">
             <label for="website_hp">לא למלא שדה זה</label>
             <input type="text" id="website_hp" name="website_hp" tabindex="-1" autocomplete="off">
@@ -436,9 +448,12 @@
             <span>שליחת פנייה וקבלת הצעת מחיר</span>
           </button>
 
-          <!-- הודעת הצלחה -->
+          <!-- הודעות סטטוס -->
           <div id="successMsg" class="success-message" style="display: none;">
             ✅ <strong>תודה רבה!</strong> פנייתך התקבלה בהצלחה. סוכן הדיגיטל שלנו יצור איתך קשר בהקדם.
+          </div>
+          <div id="blockedMsg" class="blocked-message" style="display: none;">
+            ℹ️ <strong>כבר התקבלה פנייה ממכשיר זה.</strong> צוות המרפאה יצור איתך קשר בהקדם!
           </div>
         </form>
       </div>
@@ -453,39 +468,62 @@
     </div>
   </footer>
 
-  <!-- JavaScript - אימות נתונים, חסימת ספאם ושליחה ל-Google Sheets -->
+  <!-- JavaScript - הגבלת פנייה אחת למכשיר + חסימת ספאם -->
   <script>
-    // בדיקות תקינות (Validation Regex)
+    // יצירת/שליפת מזהה ייחודי למכשיר (Device Fingerprint ID)
+    function getDeviceId() {
+        let deviceId = localStorage.getItem('cohen_agent_device_id');
+        if (!deviceId) {
+            deviceId = 'dev_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
+            localStorage.setItem('cohen_agent_device_id', deviceId);
+        }
+        return deviceId;
+    }
+
+    // בדיקה בטעינה האם המכשיר כבר שלח פנייה
+    document.addEventListener('DOMContentLoaded', function() {
+        const hasSubmitted = localStorage.getItem('cohen_agent_submitted');
+        if (hasSubmitted) {
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').innerText = 'פנייה כבר נשלחה ממכשיר זה';
+            document.getElementById('blockedMsg').style.display = 'block';
+        }
+    });
+
     function validatePhone(phone) {
         const cleanPhone = phone.replace(/[\s\-]/g, '');
-        return /^05\d{8}$/.test(cleanPhone) || /^0[23489]\d{7}$/.test(cleanPhone);
+        return /^05\d{8}$/.test(cleanPhone) || /^0\d{7}$/.test(cleanPhone);
     }
 
     function validateEmail(email) {
-        if (!email) return true; // שדה רשות
+        if (!email) return true;
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
     async function handleFormSubmit(event) {
         event.preventDefault();
+
+        // 1. הגבלה ברמת המכשיר (Device Lock)
+        if (localStorage.getItem('cohen_agent_submitted')) {
+            document.getElementById('blockedMsg').style.display = 'block';
+            return;
+        }
         
         const form = event.target;
         const submitBtn = document.getElementById('submitBtn');
         const successMsg = document.getElementById('successMsg');
         
-        // איפוס הודעות שגיאה
         document.querySelectorAll('.error-text').forEach(el => el.style.display = 'none');
         
-        // 1. הגנה מפני ספאם - בדיקת Honeypot
+        // 2. מלכודת ספאם (Honeypot)
         const hpValue = document.getElementById('website_hp').value;
         if (hpValue && hpValue.length > 0) {
-            // בוט מילא את השדה - מראים לו הצלחה מזויפת כדי שלא ינסה שוב, אבל לא שולחים כלום!
             successMsg.style.display = 'block';
             form.reset();
             return;
         }
 
-        // 2. איסוף ואימות נתונים
+        // 3. אימות שדות
         const fullName = document.getElementById('fullName').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const email = document.getElementById('email').value.trim();
@@ -511,20 +549,13 @@
 
         if (!isValid) return;
 
-        // 3. הגנת ספאם - חסימת שליחות מרובות בפרק זמן קצר
-        const lastSubmit = localStorage.getItem('cohen_agent_last_submit');
-        const now = Date.now();
-        if (lastSubmit && (now - parseInt(lastSubmit)) < 30000) { // 30 שניות צינון
-            alert('אנא המתינו כמה שניות לפני שליחת פנייה נוספת.');
-            return;
-        }
-
         const formData = {
             fullName: fullName,
             phone: phone,
             email: email,
             service: service,
             message: message,
+            deviceId: getDeviceId(), // מזהה ייחודי למכשיר
             website_hp: hpValue,
             submittedAt: new Date().toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' }),
             source: 'Cohen Agent Website'
@@ -542,17 +573,18 @@
                 body: JSON.stringify(formData)
             });
 
-            // שמירת תאריך שליחה למניעת ספאם חוזר
-            localStorage.setItem('cohen_agent_last_submit', now.toString());
+            // נעילת המכשיר לשליחה יחידה
+            localStorage.setItem('cohen_agent_submitted', 'true');
 
             successMsg.style.display = 'block';
             form.reset();
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'פנייה נשלחה בהצלחה';
             successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
         } catch (error) {
             console.error('Error submitting form:', error);
             alert('אירעה שגיאה בשליחת הטופס. אנא נסו שוב או צרו קשר בטלפון.');
-        } finally {
             submitBtn.disabled = false;
             submitBtn.innerText = 'שליחת פנייה וקבלת הצעת מחיר';
         }
