@@ -1,414 +1,480 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>עובד כהן | פיתוח אתרים, מערכות תורים ופתרונות דיגיטל למרפאות</title>
-    <style>
-        :root {
-            --bg-dark: #0b0f19;
-            --bg-card: #131c31;
-            --neon-blue: #38bdf8;
-            --neon-purple: #a855f7;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            scroll-behavior: smooth;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            line-height: 1.6;
-        }
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(11, 15, 25, 0.9);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #1f2937;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 80px;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 30px;
-            align-items: center;
-        }
-        nav a {
-            color: var(--text-main);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        nav a:hover {
-            color: var(--neon-blue);
-        }
-        .btn-cta {
-            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-            color: #0b0f19;
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-weight: 700;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
-            transition: transform 0.2s, opacity 0.2s;
-        }
-        .btn-cta:hover {
-            transform: scale(1.05);
-            opacity: 0.95;
-        }
-        .hero {
-            text-align: center;
-            padding: 120px 20px 80px 20px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        .hero span.badge {
-            background: var(--bg-card);
-            border: 1px solid #374151;
-            color: var(--neon-blue);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 25px;
-        }
-        .hero h1 {
-            font-size: 46px;
-            font-weight: 900;
-            margin-bottom: 25px;
-            line-height: 1.2;
-        }
-        .hero h1 span {
-            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            font-size: 18px;
-            color: var(--text-muted);
-            margin-bottom: 40px;
-        }
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .btn-secondary {
-            background: var(--bg-card);
-            border: 1px solid #374151;
-            color: var(--text-main);
-            padding: 14px 30px;
-            border-radius: 12px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: border-color 0.3s;
-        }
-        .btn-secondary:hover {
-            border-color: var(--neon-blue);
-        }
-        .services {
-            padding: 90px 0;
-            background: var(--bg-dark);
-        }
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-        .section-title h2 {
-            font-size: 36px;
-            font-weight: 900;
-            margin-bottom: 15px;
-        }
-        .section-title p {
-            color: var(--text-muted);
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 30px;
-        }
-        .card {
-            background: var(--bg-card);
-            border: 1px solid #1f2937;
-            padding: 35px;
-            border-radius: 20px;
-            transition: border-color 0.3s, transform 0.3s;
-        }
-        .card:hover {
-            border-color: var(--neon-blue);
-            transform: translateY(-5px);
-        }
-        .card-icon {
-            font-size: 32px;
-            margin-bottom: 20px;
-            background: rgba(56, 189, 248, 0.1);
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-        }
-        .card h3 {
-            font-size: 22px;
-            margin-bottom: 15px;
-        }
-        .card p {
-            color: var(--text-muted);
-            font-size: 15px;
-        }
-        .clinics-section {
-            padding: 90px 0;
-            background: #0d1322;
-        }
-        .clinic-card {
-            background: var(--bg-card);
-            border: 1px solid #1f2937;
-            border-radius: 20px;
-            overflow: hidden;
-            transition: border-color 0.3s;
-            padding: 30px;
-        }
-        .clinic-card:hover {
-            border-color: var(--neon-purple);
-        }
-        .contact-section {
-            padding: 90px 0;
-            background: var(--bg-dark);
-            border-top: 1px solid #1f2937;
-        }
-        .contact-form {
-            max-width: 700px;
-            margin: 0 auto;
-            background: var(--bg-card);
-            border: 1px solid #1f2937;
-            padding: 40px;
-            border-radius: 24px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-        .form-control {
-            width: 100%;
-            background: var(--bg-dark);
-            border: 1px solid #374151;
-            padding: 14px;
-            border-radius: 10px;
-            color: var(--text-main);
-            font-size: 16px;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: var(--neon-blue);
-        }
-        .btn-submit {
-            width: 100%;
-            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-            color: #0b0f19;
-            padding: 16px;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .btn-submit:hover {
-            opacity: 0.9;
-        }
-        .form-success {
-            display: none;
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-        footer {
-            background: var(--bg-dark);
-            border-top: 1px solid #1f2937;
-            text-align: center;
-            padding: 30px;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-        @media(max-width: 768px) {
-            .hero h1 { font-size: 32px; }
-            nav ul { display: none; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cohen Agent | הסוכן החכם לניהול מרפאות</title>
+  <style>
+    /* CSS - עיצוב האתר */
+    :root {
+      --primary: #0f172a;
+      --primary-hover: #1e293b;
+      --accent: #0ea5e9;
+      --accent-hover: #0284c7;
+      --bg-light: #f8fafc;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --card-bg: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      line-height: 1.6;
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo-text {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .logo-text span {
+      color: var(--accent);
+    }
+
+    .logo-tagline {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    .nav-btn {
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 80px 0 60px;
+      text-align: center;
+      background: linear-gradient(180deg, #ffffff 0%, var(--bg-light) 100%);
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 span {
+      color: var(--accent);
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto 30px;
+    }
+
+    /* Services Section */
+    .services {
+      padding: 60px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 30px;
+      color: var(--primary);
+      margin-bottom: 40px;
+      font-weight: 700;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+    }
+
+    .service-card {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      transition: transform 0.2s;
+    }
+
+    .service-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .service-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+
+    .service-card h3 {
+      font-size: 20px;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .service-card p {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    /* Contact Form Section */
+    .contact-section {
+      padding: 60px 0 90px;
+    }
+
+    .contact-card {
+      max-width: 750px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      border: 1px solid var(--border-color);
+    }
+
+    .contact-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .contact-header h2 {
+      color: var(--primary);
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .contact-header p {
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+
+    @media (max-width: 640px) {
+      .form-group.full-width {
+        grid-column: span 1;
+      }
+    }
+
+    .form-group label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .required {
+      color: #ef4444;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 12px 16px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 15px;
+      color: var(--text-dark);
+      background-color: #fff;
+      transition: all 0.2s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      transform: translateY(-2px);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .success-message {
+      margin-top: 20px;
+      padding: 16px;
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--primary);
+      color: #94a3b8;
+      padding: 30px 0;
+      text-align: center;
+      font-size: 14px;
+      border-top: 1px solid var(--primary-hover);
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <div class="container navbar">
-            <div class="logo">Ovad.Dev | Medical & Tech</div>
-            <nav>
-                <ul>
-                    <li><a href="#services">פתרונות למרפאות</a></li>
-                    <li><a href="#specialties">תחומי התמחות</a></li>
-                    <li><a href="#about">על אודות</a></li>
-                    <li><a href="#contact" class="btn-cta">תיאום שיחת ייעוץ</a></li>
-                </ul>
-            </nav>
+  <!-- Header -->
+  <header>
+    <div class="container nav-wrapper">
+      <a href="#" class="logo-container">
+        <div>
+          <div class="logo-text">Cohen <span>Agent</span></div>
+          <span class="logo-tagline">הסוכן החכם לניהול מרפאות</span>
         </div>
-    </header>
+      </a>
+      <a href="#contact" class="nav-btn">תיאום שיחת ייעוץ</a>
+    </div>
+  </header>
 
-    <section class="hero">
-        <span class="badge">אתרים מתקדמים • מערכות תורים • שימור לקוחות • אפליקציות רפואיות</span>
-        <h1>השדרוג הדיגיטלי למרפאות מובילות – <br><span>מאתר יוקרתי ועד למערכת ניהול חכמה</span></h1>
-        <p>פתרונות טכנולוגיים מקיפים למרפאות בוטוקס ואסתטיקה, מרפאות שיניים, מרפאות נגעים ומומחים – להגדלת כמות המטופלים וייעול העבודה.</p>
-        <div class="hero-buttons">
-            <a href="#contact" class="btn-cta" style="padding: 14px 30px;">בואו נדבר על המרפאה שלך</a>
-            <a href="#services" class="btn-secondary">לצפייה בפתרונות</a>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>הסוכן החכם <span>לניהול מרפאות</span></h1>
+      <p>מעטפת דיגיטלית מלאה: ניהול סושיאל, אוטומציה לקליטת לידים, וניהול יומן תורים חכם למרפאות וקליניקות.</p>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="services">
+    <div class="container">
+      <h2 class="section-title">הפתרונות הדיגיטליים שלנו</h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">📅</div>
+          <h3>ניהול תורים ואוטומציות</h3>
+          <p>סנכרון מלא של פניות מהאתר ישירות ליומן המרפאה ול-Google Sheets/CRM בזמן אמת.</p>
         </div>
-    </section>
+        <div class="service-card">
+          <div class="service-icon">📲</div>
+          <h3>מעטפת סושיאל ושיווק</h3>
+          <p>ניהול נוכחות דיגיטלית מקצועית באינסטגרם, פייסבוק וגוגל המותאמת במיוחד לתחום הרפואי והאסתטי.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">💻</div>
+          <h3>פיתוח ותחזוקת אתרים</h3>
+          <p>אתרי תדמית ומכירה מהירים, מותאמים לנייד, ומובטחים בטכנולוגיה המתקדמת ביותר.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🤖</div>
+          <h3>מענה בוואטסאפ בזמן אמת</h3>
+          <p>סוכן דיגיטלי השולח הודעת אישור מיידית למטופל והתראה מהירה לצוות הקליניקה.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <section id="services" class="services">
-        <div class="container">
-            <div class="section-title">
-                <h2>הפתרונות הדיגיטליים שלנו למרפאות</h2>
-                <p>כל מה שהמרפאה שלך צריכה תחת קורת גג אחת לשירות מטופלים מושלם</p>
+  <!-- Contact Form Section -->
+  <section class="contact-section" id="contact">
+    <div class="container">
+      <div class="contact-card">
+        <div class="contact-header">
+          <h2>יצירת קשר ותיאום שיחת ייעוץ</h2>
+          <p>השאירו פרטים וסוכן הדיגיטל של <strong>Cohen Agent</strong> יחזור אליכם בהקדם.</p>
+        </div>
+
+        <form id="contactForm" onsubmit="handleFormSubmit(event)">
+          <div class="form-grid">
+            <!-- שם מלא -->
+            <div class="form-group">
+              <label for="fullName">שם מלא / שם המרפאה <span class="required">*</span></label>
+              <input type="text" id="fullName" name="fullName" placeholder="לדוגמה: מרפאת ד&quot;ר כהן" required>
             </div>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-icon">💻</div>
-                    <h3>אתרים יוקרתיים למרפאות</h3>
-                    <p>בניית אתרי תדמית מתקדמים, מהירים ומותאמים למובייל, המעבירים מקצועיות ובטחון למטופלים חדשים.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon">📅</div>
-                    <h3>מערכות ניהול תורים והזמנות</h3>
-                    <p>יומן חכם לתיאום תורים אוטומטי, שליחת תזכורות למטופלים וצמצום משמעותי של ביטולים והברזות.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon">🤝</div>
-                    <h3>שימור לקוחות ואוטומציות</h3>
-                    <p>מערכות מתקדמות לשימור קשרי מטופלים, מעקב אחר טיפולים חוזרים, מועדוני לקוחות ושיווק חכם.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon">📱</div>
-                    <h3>פיתוח אפליקציות למרפאות</h3>
-                    <p>פיתוח אפליקציות מובייל ייעודיות (iOS / Android) לניהול תיק מטופל, תורים ישירים ונגישות מלאה לשירותי המרפאה.</p>
-                </div>
+
+            <!-- טלפון -->
+            <div class="form-group">
+              <label for="phone">מספר טלפון (וואטסאפ) <span class="required">*</span></label>
+              <input type="tel" id="phone" name="phone" placeholder="050-0000000" required pattern="[0-9\-]{9,11}">
             </div>
-        </div>
-    </section>
 
-    <section id="specialties" class="clinics-section">
-        <div class="container">
-            <div class="section-title">
-                <h2>מרפאות שאנו מתמחים בהן</h2>
-                <p>התאמה מדויקת של המערכות והשיווק לצרכים הייחודיים של כל תחום רפואי</p>
+            <!-- אימייל -->
+            <div class="form-group">
+              <label for="email">כתובת אימייל</label>
+              <input type="email" id="email" name="email" placeholder="clinic@example.com">
             </div>
-            <div class="grid">
-                <div class="clinic-card">
-                    <div style="font-size: 32px; margin-bottom: 15px;">💉</div>
-                    <h3 style="font-size: 20px; margin-bottom: 10px;">מרפאות בוטוקס ואסתטיקה</h3>
-                    <p style="color: var(--text-muted); font-size: 14px;">אתרים ויזואליים מרהיבים, קטלוג טיפולים נגיש ומערכות תורים שמותאמות לקצב העבודה המהיר בקליניקות אסתטיקה.</p>
-                </div>
-                <div class="clinic-card">
-                    <div style="font-size: 32px; margin-bottom: 15px;">🦷</div>
-                    <h3 style="font-size: 20px; margin-bottom: 10px;">מרפאות שיניים</h3>
-                    <p style="color: var(--text-muted); font-size: 14px;">ניהול תורים מתקדם לרופאים שונים במרפאה, תזכורות אוטומטיות לביקורת תקופתית ושיווק ממוקד.</p>
-                </div>
-                <div class="clinic-card">
-                    <div style="font-size: 32px; margin-bottom: 15px;">🔬</div>
-                    <h3 style="font-size: 20px; margin-bottom: 10px;">מרפאות נגעים ומומחים</h3>
-                    <p style="color: var(--text-muted); font-size: 14px;">ממשקים מאובטחים, טפסים רפואיים דיגיטליים לפני הגעה וניהול פניות מדויק לרופאים מומחים.</p>
-                </div>
+
+            <!-- בחירת שירות -->
+            <div class="form-group">
+              <label for="service">השירות המבוקש <span class="required">*</span></label>
+              <select id="service" name="service" required>
+                <option value="" disabled selected>בחרו שירות...</option>
+                <option value="ניהול תורים ואוטומציות">ניהול תורים, יומן ואוטומציות</option>
+                <option value="מעטפת סושיאל ושיווק">ניהול סושיאל מדיה ופרסום למרפאות</option>
+                <option value="בניית ותחזוקת אתר">פיתוח, שדרוג ותחזוקת אתר הקליניקה</option>
+                <option value="מעטפת דיגיטל מלאה">מעטפת דיגיטלית מקיפה</option>
+              </select>
             </div>
-        </div>
-    </section>
+          </div>
 
-    <section id="about" style="padding: 90px 0;">
-        <div class="container" style="max-width: 800px; text-align: center;">
-            <h2 style="font-size: 36px; margin-bottom: 20px;">המומחיות שעושה את ההבדל למרפאה שלך</h2>
-            <p style="color: var(--text-muted); font-size: 18px; line-height: 1.8;">
-                אני משלב טכנולוגיה מתקדמת, חשיבה שיווקית והבנה עמוקה של צרכי עולם הרפואה והאסתטיקה. החל מהאתר הראשון של מרפאת הבוטוקס, דרך הטמעת מערכות תורים חכמות ועד לפיתוח אפליקציות עתידיות – המטרה היא להעניק למטופלים שלך חוויה מעולה ולפנות לך זמן למה שחשוב באמת.
-            </p>
-        </div>
-    </section>
+          <!-- הודעה חופשית -->
+          <div class="form-group full-width">
+            <label for="message">תוכן ההודעה / פרטים נוספים</label>
+            <textarea id="message" name="message" rows="4" placeholder="ספרו לנו בקצרה על המרפאה ואיך נוכל לעזור..."></textarea>
+          </div>
 
-    <section id="contact" class="contact-section">
-        <div class="container">
-            <div class="section-title">
-                <h2>בואו ניקח את המרפאה שלכם קדימה</h2>
-                <p>השאירו פרטים ונחזור אליכם בהקדם לבניית פתרון מותאם אישית</p>
-            </div>
-            <form class="contact-form" id="contactForm" onsubmit="handleFormSubmit(event)">
-                <div class="form-group">
-                    <label>שם מלא / שם המרפאה</label>
-                    <input type="text" class="form-control" placeholder="לדוגמה: מרפאת אסתטיקה ובוטוקס" required>
-                </div>
-                <div class="form-group">
-                    <label>טלפון נייד</label>
-                    <input type="tel" class="form-control" placeholder="050-0000000" required>
-                </div>
-                <div class="form-group">
-                    <label>תחום המרפאה / השירות הנדרש</label>
-                    <select class="form-control">
-                        <option>מרפאת בוטוקס / אסתטיקה (אתר + תורים)</option>
-                        <option>מרפאת שיניים (מערכת תורים וניהול)</option>
-                        <option>מרפאת נגעים / מומחים</option>
-                        <option>פיתוח אפליקציה למרפאה</option>
-                        <option>אחר / שילוב שירותים</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-submit">שליחת פנייה וקבלת הצעת מחיר</button>
-                <div class="form-success" id="successMsg">תודה רבה! הפנייה התקבלה בהצלחה. נחזור אליך בהקדם.</div>
-            </form>
-        </div>
-    </section>
+          <!-- כפתור שליחה -->
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span>שליחת פנייה וקבלת הצעת מחיר</span>
+          </button>
 
-    <footer>
-        <p>© 2026 Ovad.Dev | Medical & Tech Solutions. כל הזכויות שמורות.</p>
-    </footer>
+          <!-- הודעת הצלחה -->
+          <div id="successMsg" class="success-message" style="display: none;">
+            ✅ <strong>תודה רבה!</strong> פנייתך התקבלה בהצלחה. סוכן הדיגיטל שלנו יצור איתך קשר בהקדם.
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            document.getElementById('successMsg').style.display = 'block';
-            document.getElementById('contactForm').reset();
-            setTimeout(() => {
-                document.getElementById('successMsg').style.display = 'none';
-            }, 5000);
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>© 2026 Cohen Agent – הסוכן החכם לניהול מרפאות | כל הזכויות שמורות</p>
+      <p>ליצירת קשר: 052-4245671 | <a href="mailto:ovad17@gmail.com">ovad17@gmail.com</a></p>
+    </div>
+  </footer>
+
+  <!-- JavaScript - אוטומציה ושליחה ל-Google Sheets -->
+  <script>
+    async function handleFormSubmit(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const submitBtn = document.getElementById('submitBtn');
+        const successMsg = document.getElementById('successMsg');
+        
+        // 1. איסוף נתוני הטופס
+        const formData = {
+            fullName: document.getElementById('fullName').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            service: document.getElementById('service').value,
+            message: document.getElementById('message').value.trim(),
+            submittedAt: new Date().toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' }),
+            source: 'Cohen Agent Website'
+        };
+
+        // 2. הקישור המדויק מ-Google Apps Script
+        const webhookUrl = 'https://script.google.com/macros/s/AKfycbx-ihsfpolvo9cwU7_4tHnMmIWlaGkzpCefXMRDw6pDvTXLZkS8q_uuAO2eli2jVsJpKg/exec'; 
+
+        try {
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'שולח פנייה...';
+
+            // שליחת הנתונים ל-Google Sheets
+            await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(formData)
+            });
+
+            // הצגת הודעת הצלחה ואיפוס הטופס
+            successMsg.style.display = 'block';
+            form.reset();
+            successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('אירעה שגיאה בשליחת הטופס. אנא נסו שוב או צרו קשר בטלפון.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'שליחת פנייה וקבלת הצעת מחיר';
         }
-    </script>
+    }
+  </script>
 </body>
 </html>
