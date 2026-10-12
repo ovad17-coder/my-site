@@ -16,6 +16,7 @@
       --text-muted: #64748b;
       --border-color: #e2e8f0;
       --card-bg: #ffffff;
+      --error-color: #ef4444;
     }
 
     * {
@@ -232,7 +233,7 @@
     }
 
     .required {
-      color: #ef4444;
+      color: var(--error-color);
     }
 
     .form-group input,
@@ -253,6 +254,21 @@
       outline: none;
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    }
+
+    /* שדה מלכודת ספאם - מוסתר מגולשים אנושיים */
+    .hp-field {
+      display: none !important;
+      visibility: hidden !important;
+      position: absolute !important;
+      left: -9999px !important;
+    }
+
+    .error-text {
+      color: var(--error-color);
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
     }
 
     .btn-submit {
@@ -367,24 +383,33 @@
           <p>השאירו פרטים וסוכן הדיגיטל של <strong>Cohen Agent</strong> יחזור אליכם בהקדם.</p>
         </div>
 
-        <form id="contactForm" onsubmit="handleFormSubmit(event)">
+        <form id="contactForm" onsubmit="handleFormSubmit(event)" novalidate>
+          <!-- שדה מלכודת ספאם (Honeypot) - נסתר מגולשים -->
+          <div class="hp-field">
+            <label for="website_hp">לא למלא שדה זה</label>
+            <input type="text" id="website_hp" name="website_hp" tabindex="-1" autocomplete="off">
+          </div>
+
           <div class="form-grid">
             <!-- שם מלא -->
             <div class="form-group">
               <label for="fullName">שם מלא / שם המרפאה <span class="required">*</span></label>
               <input type="text" id="fullName" name="fullName" placeholder="לדוגמה: מרפאת ד&quot;ר כהן" required>
+              <span class="error-text" id="nameError">אנא הזינו שם מלא תקין (לפחות 2 אותיות)</span>
             </div>
 
             <!-- טלפון -->
             <div class="form-group">
               <label for="phone">מספר טלפון (וואטסאפ) <span class="required">*</span></label>
-              <input type="tel" id="phone" name="phone" placeholder="050-0000000" required pattern="[0-9\-]{9,11}">
+              <input type="tel" id="phone" name="phone" placeholder="050-0000000" required>
+              <span class="error-text" id="phoneError">אנא הזינו מספר טלפון ישראלי תקין (לדוגמה: 0501234567)</span>
             </div>
 
             <!-- אימייל -->
             <div class="form-group">
               <label for="email">כתובת אימייל</label>
               <input type="email" id="email" name="email" placeholder="clinic@example.com">
+              <span class="error-text" id="emailError">כתובת האימייל אינה תקינה</span>
             </div>
 
             <!-- בחירת שירות -->
@@ -428,8 +453,19 @@
     </div>
   </footer>
 
-  <!-- JavaScript - אוטומציה ושליחה ל-Google Sheets -->
+  <!-- JavaScript - אימות נתונים, חסימת ספאם ושליחה ל-Google Sheets -->
   <script>
+    // בדיקות תקינות (Validation Regex)
+    function validatePhone(phone) {
+        const cleanPhone = phone.replace(/[\s\-]/g, '');
+        return /^05\d{8}$/.test(cleanPhone) || /^0[23489]\d{7}$/.test(cleanPhone);
+    }
+
+    function validateEmail(email) {
+        if (!email) return true; // שדה רשות
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
     async function handleFormSubmit(event) {
         event.preventDefault();
         
@@ -437,32 +473,78 @@
         const submitBtn = document.getElementById('submitBtn');
         const successMsg = document.getElementById('successMsg');
         
-        // 1. איסוף נתוני הטופס
+        // איפוס הודעות שגיאה
+        document.querySelectorAll('.error-text').forEach(el => el.style.display = 'none');
+        
+        // 1. הגנה מפני ספאם - בדיקת Honeypot
+        const hpValue = document.getElementById('website_hp').value;
+        if (hpValue && hpValue.length > 0) {
+            // בוט מילא את השדה - מראים לו הצלחה מזויפת כדי שלא ינסה שוב, אבל לא שולחים כלום!
+            successMsg.style.display = 'block';
+            form.reset();
+            return;
+        }
+
+        // 2. איסוף ואימות נתונים
+        const fullName = document.getElementById('fullName').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const service = document.getElementById('service').value;
+        const message = document.getElementById('message').value.trim();
+
+        let isValid = true;
+
+        if (!fullName || fullName.length < 2) {
+            document.getElementById('nameError').style.display = 'block';
+            isValid = false;
+        }
+
+        if (!validatePhone(phone)) {
+            document.getElementById('phoneError').style.display = 'block';
+            isValid = false;
+        }
+
+        if (!validateEmail(email)) {
+            document.getElementById('emailError').style.display = 'block';
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        // 3. הגנת ספאם - חסימת שליחות מרובות בפרק זמן קצר
+        const lastSubmit = localStorage.getItem('cohen_agent_last_submit');
+        const now = Date.now();
+        if (lastSubmit && (now - parseInt(lastSubmit)) < 30000) { // 30 שניות צינון
+            alert('אנא המתינו כמה שניות לפני שליחת פנייה נוספת.');
+            return;
+        }
+
         const formData = {
-            fullName: document.getElementById('fullName').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            service: document.getElementById('service').value,
-            message: document.getElementById('message').value.trim(),
+            fullName: fullName,
+            phone: phone,
+            email: email,
+            service: service,
+            message: message,
+            website_hp: hpValue,
             submittedAt: new Date().toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' }),
             source: 'Cohen Agent Website'
         };
 
-        // 2. הקישור המדויק מ-Google Apps Script
         const webhookUrl = 'https://script.google.com/macros/s/AKfycbx-ihsfpolvo9cwU7_4tHnMmIWlaGkzpCefXMRDw6pDvTXLZkS8q_uuAO2eli2jVsJpKg/exec'; 
 
         try {
             submitBtn.disabled = true;
             submitBtn.innerText = 'שולח פנייה...';
 
-            // שליחת הנתונים ל-Google Sheets
             await fetch(webhookUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(formData)
             });
 
-            // הצגת הודעת הצלחה ואיפוס הטופס
+            // שמירת תאריך שליחה למניעת ספאם חוזר
+            localStorage.setItem('cohen_agent_last_submit', now.toString());
+
             successMsg.style.display = 'block';
             form.reset();
             successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
